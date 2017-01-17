@@ -10,26 +10,27 @@ class JokesController extends Controller
 {
     public function actionIndex()
     {
+		//Считаем количество строк в таблице БД
+		$rowCount = Jokes::find()->count();
 		// Запрос к БД
-		$randomJokeID = rand(1,3);
+		$randomJokeIDs = JokesController::UniqueRandomNumbersWithinRange(1, $rowCount, 3);//array_rand(range(1,$rowCount), 3);
         $query = Jokes::find()
 			->select('JokeID, JokeText')
 			->from('Jokes')
-			->where("JokeID='$randomJokeID'");
-
-        $pagination = new Pagination([
-            'defaultPageSize' => 5,
-            'totalCount' => $query->count(),
-        ]);
+			->where("JokeID='$randomJokeIDs[0]' OR JokeID='$randomJokeIDs[1]'
+			OR JokeID='$randomJokeIDs[2]'");
 
         $jokes = $query->orderBy('JokeID')
-            ->offset($pagination->offset)
-            ->limit($pagination->limit)
             ->all();
 
         return $this->render('index', [
             'jokes' => $jokes,
-            'pagination' => $pagination,
         ]);
     }
+	
+	private function UniqueRandomNumbersWithinRange($min, $max, $quantity) {
+    $numbers = range($min, $max);
+    shuffle($numbers);
+    return array_slice($numbers, 0, $quantity);
+}
 }
