@@ -6,6 +6,7 @@ use yii\widgets\LinkPager;
 <div class="body-content">
 	<div class="row">
 <?php 
+
 foreach ($jokes as $joke): 
 ?>
 		<div class="col-lg-4">
