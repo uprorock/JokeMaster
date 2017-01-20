@@ -2,24 +2,38 @@
 
 namespace app\controllers;
 
+use Yii;
 use yii\web\Controller;
 use yii\data\Pagination;
 use app\models\Jokes;
 
 class JokesController extends Controller
 {
+	
+	public function actionLoad(){
+		$jokesID=JokesController::AddThreeRandomJokes();
+		$jokes = JokesController::makeJokes();
+        return $this->render('index', [
+            'jokes' => $jokes,
+			'jokesid'=>$jokesID,
+        ]);
+	}
+	
     public function actionIndex()
-    {
-		JokesController::AddThreeRandomJokes();
-		
+    {	
+        $jokes = JokesController::makeJokes();
+        return $this->render('index', [
+            'jokes' => $jokes,
+        ]);
+    }
+	
+	private function makeJokes(){
 		//Считаем количество строк в таблице БД
 		$allRows = Jokes::find()
 					->select('JokeID')
 					->from('Jokes')
 					->all();
-		
-					
-		//print_r($allRows[10]["JokeID"]);
+
 		// Запрос к БД
 		$randomJokeIDs = JokesController::getUniqueIDs($allRows);
 		//print_r($randomJokeIDs);
@@ -31,11 +45,8 @@ class JokesController extends Controller
 
         $jokes = $query->orderBy('JokeID')
             ->all();
-
-        return $this->render('index', [
-            'jokes' => $jokes,
-        ]);
-    }
+			return $jokes;
+	}
 	
 	private function getUniqueIDs($allRows) {
 		$randomJokeIDs = JokesController::UniqueRandomNumbersWithinRange(1, count($allRows), 3);
@@ -59,6 +70,7 @@ class JokesController extends Controller
 	
 	public function AddThreeRandomJokes()
 	{
+		$stack = array();
 		$idsToAdd = JokesController::GetRandomJokesId();
 		foreach ($idsToAdd as &$idToAdd) {
 
@@ -95,8 +107,10 @@ class JokesController extends Controller
 				$data = $str = mb_convert_encoding($newJokeText, 'UTF-8', 'windows-1251');
 				$model->JokeText = $data;
 				$model->save();
+				array_push($stack,$idToAdd);
 			}	
 		}
+		return $stack;
 	}
 	
 	// функция получения рандомного id

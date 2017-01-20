@@ -1,6 +1,9 @@
 <?php
 use yii\helpers\Html;
 use yii\widgets\LinkPager;
+use yii\bootstrap\Button;
+use yii\widgets\Pjax;
+use yii\widgets\ActiveForm;
 ?>
 <h1>Jokes</h1>
 <div class="body-content">
@@ -16,4 +19,9 @@ foreach ($jokes as $joke):
 		</div>
 <?php endforeach; ?>
 	</div>
+	<div align="center">
+    <?= Html::a("Добавить", ['jokes/load'], ['class' => 'btn btn-lg btn-primary']); ?>
+	<?= Html::a("Обновить", ['jokes/index'], ['class' => 'btn btn-lg btn-primary']); ?>
+	<p style="margin-top:10px;"><?php if($jokesid!=null) echo 'Добавлены шутки: #'.implode(', #',$jokesid) ?></p>
+</div>
 </div>
